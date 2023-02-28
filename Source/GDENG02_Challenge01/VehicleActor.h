@@ -24,13 +24,17 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable)
+	void AddToQueue(int Request);
+
+private:
+	void SetLoadRequest(bool value);
+	void ComputeTravel();
 	void Move(bool canMove, BuildingType Type);
 	void Unload(ItemType Item);
 	void Load(ItemType Item, int AmountIn);
-	void SetLoadRequest(bool value);
-
-private:
-	void ComputeTravel();
+	void UpdateQueue();
 
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<BuildingType> Target;
@@ -99,6 +103,7 @@ private:
 	bool UnloadRequest;
 	bool MoveRequest;
 
-	TQueue<ItemType> ItemList;
+	TArray<ItemType> ItemList;
+	TQueue<BuildingType> RequestQueue;
 	int ItemCount;
 };

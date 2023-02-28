@@ -25,8 +25,15 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	ItemType Unload(int amount);
-	bool IsFull;
+
+	int Unload(int amount);
+
+	void Load(int amount, ItemType type);
+
+	bool IsOutputFull();
+	bool IsBuildingEmpty();
+	bool DoesContainItem(ItemType itemType);
+	
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -47,8 +54,12 @@ private:
 	UPROPERTY(EditAnywhere)
 		int OutputCapacity;
 
+	TArray<ItemType> Inventory;
+	bool CanUseInventory = false;
 
 	float Timer;
 	int Input;
 	int Output;
+	bool IsFull;
+	bool IsEmpty = true;
 };
