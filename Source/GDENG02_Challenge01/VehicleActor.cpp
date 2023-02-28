@@ -32,7 +32,6 @@ void AVehicleActor::BeginPlay()
 void AVehicleActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	Ticks += DeltaTime;
 
 	if (Mesh != NULL) {
 		if (!UnloadRequest) {
@@ -48,18 +47,24 @@ void AVehicleActor::Tick(float DeltaTime)
 				this->SetActorLocation(location);
 
 				if (Distance < 200) {
-					Ticks = 0;
 					if (Target == CoalMine) {
 						Target = Furnace;
+						CoalMineReference->Unload(1);
 					}
 					else if (Target == IronMine) {
 						Target = Furnace;
+						CoalMineReference->Unload(1);
+
 					}
 					else if (Target == Lumberjack) {
 						Target = Factory;
+						CoalMineReference->Unload(1);
+
 					}
 					else if (Target == Furnace) {
 						Target = Factory;
+						CoalMineReference->Unload(1);
+
 					}
 					else if (Target == Factory) {
 						int32 RandomValue = FMath::RandRange(1, 2);
@@ -109,6 +114,7 @@ void AVehicleActor::Unload(ItemType Item)
 {
 	if (ItemList.Peek() == &Item) {
 		ItemList.Dequeue(Item);
+		ItemCount--;
 	}
 }
 
@@ -116,6 +122,8 @@ void AVehicleActor::Load(ItemType Item, int AmountIn)
 {
 	if (AmountIn <= MaxCapacity) {
 		ItemList.Enqueue(Item);
+		ItemCount++;
+
 	}
 }
 

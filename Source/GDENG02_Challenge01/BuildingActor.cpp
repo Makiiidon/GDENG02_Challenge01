@@ -45,6 +45,9 @@ void ABuildingActor::BeginPlay()
 		OutputCapacity = 1000000;
 		UE_LOG(LogTemp, Warning, TEXT("Factory"));
 	}
+
+	IsFull = false;
+
 }
 
 // Called every frame
@@ -62,7 +65,11 @@ void ABuildingActor::Tick(float DeltaTime)
 				}
 				else {
 					Timer -= DeltaTime;
+					IsFull = false;
 				}
+			}
+			else { // Building is full, therefore call vehicle
+				IsFull = true;
 			}
 		}
 		else {
@@ -78,30 +85,4 @@ ItemType ABuildingActor::Unload(int amount)
 	Output -= amount;
 	return Item;
 }
-
-//void ABuildingActor::RequestUnload(AVehicleActor* Vehicle)
-//{
-//	BuildingType TargetLoc = None;
-//	if (Type == CoalMine) {
-//		TargetLoc = Furnace;
-//	}
-//	else if (Type == IronMine) {
-//		TargetLoc = Furnace;
-//	}
-//	else if (Type == Furnace) {
-//		TargetLoc = Factory;
-//	}
-//	else if (Type == Factory) {
-//		int32 RandomValue = FMath::RandRange(1, 2);
-//		if (RandomValue == 1) {
-//			TargetLoc = CoalMine;
-//		}
-//		else {
-//			TargetLoc = IronMine;
-//		}
-//	}
-//
-//	Vehicle->Move(true, TargetLoc);
-//}
-
 

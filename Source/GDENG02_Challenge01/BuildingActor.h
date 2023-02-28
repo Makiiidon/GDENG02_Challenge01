@@ -26,17 +26,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	ItemType Unload(int amount);
-	//void RequestUnload(AVehicleActor *Vehicle);
-
+	bool IsFull;
 
 private:
-	//UPROPERTY(EditAnywhere)
-	//	AVehicleActor* VehicleActorReference1;
-	//
-	//UPROPERTY(EditAnywhere)
-	//	AActor* ActorReference1;
-
-
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<BuildingType> Type;
 

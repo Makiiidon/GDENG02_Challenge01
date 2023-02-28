@@ -95,10 +95,10 @@ private:
 	float Speed;
 	float Distance;
 	FVector Direction;
-	float Ticks = 0.0f;
 
 	bool UnloadRequest;
 	bool MoveRequest;
 
 	TQueue<ItemType> ItemList;
+	int ItemCount;
 };
