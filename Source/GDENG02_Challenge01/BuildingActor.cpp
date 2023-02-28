@@ -68,14 +68,40 @@ void ABuildingActor::Tick(float DeltaTime)
 		else {
 			//UE_LOG(LogTemp, Warning, TEXT("Building has no Input!"));
 		}
+		
 	}
-	
 }
 
-BuildingType ABuildingActor::Unload(int amount)
+ItemType ABuildingActor::Unload(int amount)
 {
 	Input += amount;
 	Output -= amount;
-	return Type;
+	return Item;
 }
+
+//void ABuildingActor::RequestUnload(AVehicleActor* Vehicle)
+//{
+//	BuildingType TargetLoc = None;
+//	if (Type == CoalMine) {
+//		TargetLoc = Furnace;
+//	}
+//	else if (Type == IronMine) {
+//		TargetLoc = Furnace;
+//	}
+//	else if (Type == Furnace) {
+//		TargetLoc = Factory;
+//	}
+//	else if (Type == Factory) {
+//		int32 RandomValue = FMath::RandRange(1, 2);
+//		if (RandomValue == 1) {
+//			TargetLoc = CoalMine;
+//		}
+//		else {
+//			TargetLoc = IronMine;
+//		}
+//	}
+//
+//	Vehicle->Move(true, TargetLoc);
+//}
+
 

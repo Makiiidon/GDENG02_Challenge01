@@ -25,11 +25,23 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	BuildingType Unload(int amount);
+	ItemType Unload(int amount);
+	//void RequestUnload(AVehicleActor *Vehicle);
+
 
 private:
+	//UPROPERTY(EditAnywhere)
+	//	AVehicleActor* VehicleActorReference1;
+	//
+	//UPROPERTY(EditAnywhere)
+	//	AActor* ActorReference1;
+
+
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<BuildingType> Type;
+
+	UPROPERTY(EditAnywhere)
+		TEnumAsByte<ItemType> Item;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent * Mesh;
@@ -42,6 +54,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		int OutputCapacity;
+
 
 	float Timer;
 	int Input;

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BuildingEnum.h"
+#include "BuildingActor.h"
 #include "VehicleActor.generated.h"
 
 UCLASS()
@@ -23,13 +24,20 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void Move(bool canMove, BuildingType Type);
+	void Unload(ItemType Item);
+	void Load(ItemType Item, int AmountIn);
+	void SetLoadRequest(bool value);
 
 private:
 	UPROPERTY(EditAnywhere)
-		TEnumAsByte<BuildingType> ItemTypeHeld;
+		TEnumAsByte<BuildingType> Target;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere)
+		float RotationOffset;
 
 	UPROPERTY(EditAnywhere)
 		float MinTravelTime;
@@ -49,26 +57,42 @@ private:
 		int MaxCapacity;
 
 	UPROPERTY(EditAnywhere)
-		AActor* CoalMineReference;
+		AActor* CoalMineLocation;
 
 	UPROPERTY(EditAnywhere)
-		AActor* IronMineReference;
+		AActor* IronMineLocation;
 	
 	UPROPERTY(EditAnywhere)
-		AActor* LumberjackReference;
+		AActor* LumberjackLocation;
 	
 	UPROPERTY(EditAnywhere)
-		AActor* FurnaceReference;
+		AActor* FurnaceLocation;
 
 	UPROPERTY(EditAnywhere)
-		AActor* FactoryReference;
+		AActor* FactoryLocation;
+
+	UPROPERTY(EditAnywhere)
+		ABuildingActor* CoalMineReference;
+
+	UPROPERTY(EditAnywhere)
+		ABuildingActor* IronMineReference;
+
+	UPROPERTY(EditAnywhere)
+		ABuildingActor* LumberjackReference;
+
+	UPROPERTY(EditAnywhere)
+		ABuildingActor* FurnaceReference;
+
+	UPROPERTY(EditAnywhere)
+		ABuildingActor* FactoryReference;
 
 	AActor* Destination;
 
 	float TravelTime;
 	float Ticks = 0.0f;
 
-	int NumberOfItems;
-
 	bool UnloadRequest;
+	bool MoveRequest;
+
+	TQueue<ItemType> ItemList;
 };
