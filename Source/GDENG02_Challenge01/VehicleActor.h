@@ -30,6 +30,8 @@ public:
 	void SetLoadRequest(bool value);
 
 private:
+	void ComputeTravel();
+
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<BuildingType> Target;
 
@@ -86,9 +88,13 @@ private:
 	UPROPERTY(EditAnywhere)
 		ABuildingActor* FactoryReference;
 
-	AActor* Destination;
+	FVector CurrentLocation;
+	FVector TargetLocation;
 
 	float TravelTime;
+	float Speed;
+	float Distance;
+	FVector Direction;
 	float Ticks = 0.0f;
 
 	bool UnloadRequest;

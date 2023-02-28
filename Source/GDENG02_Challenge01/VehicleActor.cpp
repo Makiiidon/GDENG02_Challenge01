@@ -22,6 +22,10 @@ void AVehicleActor::BeginPlay()
 	UnloadRequest = false;
 	MoveRequest = true;
 	TravelTime = MinTravelTime;
+
+	ComputeTravel();
+	Speed = Distance / TravelTime;
+	//UE_LOG(LogTemp, Warning, TEXT("Speed: %f"), Speed);
 }
 
 // Called every frame
@@ -32,41 +36,19 @@ void AVehicleActor::Tick(float DeltaTime)
 
 	if (Mesh != NULL) {
 		if (!UnloadRequest) {
-			FVector CurrentLocation = this->GetActorLocation();
-			FVector TargetLocation;
-
-			if (Target == CoalMine) {
-				TargetLocation = CoalMineLocation->GetActorLocation();
-			}
-			else if (Target == IronMine) {
-				TargetLocation = IronMineLocation->GetActorLocation();
-			}
-			else if (Target == Lumberjack) {
-				TargetLocation = LumberjackLocation->GetActorLocation();
-			}
-			else if (Target == Furnace) {
-				TargetLocation = FurnaceLocation->GetActorLocation();
-			}
-			else if (Target == Factory) {
-				TargetLocation = FactoryLocation->GetActorLocation();
-			}
-			else {
-				TargetLocation = CurrentLocation;
-			}
-
 			// Movement
 			if (MoveRequest) {
-				FVector Direction = (TargetLocation - CurrentLocation).GetSafeNormal();
-				float Distance = FVector::Dist(CurrentLocation, TargetLocation);
-				float Speed = Distance / TravelTime;
+				ComputeTravel();
+
 				FVector Velocity = Direction * Speed;
 				FVector location = CurrentLocation + Velocity * DeltaTime;
 
 				FRotator rotation = UKismetMathLibrary::FindLookAtRotation(CurrentLocation, TargetLocation) + FRotator(0, RotationOffset, 0);
-				this->SetActorLocation(location);
 				this->SetActorRotation(rotation);
+				this->SetActorLocation(location);
 
-				if (Distance < 100) {
+				if (Distance < 200) {
+					Ticks = 0;
 					if (Target == CoalMine) {
 						Target = Furnace;
 					}
@@ -88,8 +70,10 @@ void AVehicleActor::Tick(float DeltaTime)
 							Target = IronMine;
 						}
 					}
+
 					SetLoadRequest(true);
 					//UE_LOG(LogTemp, Warning, TEXT("OVERLAPPING IS HAPPENING!!!!"));
+
 				}
 			}
 		}
@@ -99,14 +83,18 @@ void AVehicleActor::Tick(float DeltaTime)
 				UnloadRequest = false;
 				MoveRequest = true;
 				UE_LOG(LogTemp, Warning, TEXT("FINISHED LOADING"));
-
 			}
 			else {
 				LoadingTime -= DeltaTime;
 				MoveRequest = false;
 
 			}
-			
+			ComputeTravel();
+
+			Distance = FVector::Dist(CurrentLocation, TargetLocation);
+			Speed = Distance / TravelTime;
+			//UE_LOG(LogTemp, Warning, TEXT("Speed: %f"), Speed);
+
 		}		
 	}
 }
@@ -134,5 +122,32 @@ void AVehicleActor::Load(ItemType Item, int AmountIn)
 void AVehicleActor::SetLoadRequest(bool value)
 {
 	UnloadRequest = value;
+}
+
+void AVehicleActor::ComputeTravel()
+{
+	CurrentLocation = this->GetActorLocation();
+
+	if (Target == CoalMine) {
+		TargetLocation = CoalMineLocation->GetActorLocation();
+	}
+	else if (Target == IronMine) {
+		TargetLocation = IronMineLocation->GetActorLocation();
+	}
+	else if (Target == Lumberjack) {
+		TargetLocation = LumberjackLocation->GetActorLocation();
+	}
+	else if (Target == Furnace) {
+		TargetLocation = FurnaceLocation->GetActorLocation();
+	}
+	else if (Target == Factory) {
+		TargetLocation = FactoryLocation->GetActorLocation();
+	}
+	else {
+		TargetLocation = CurrentLocation;
+	}
+
+	Direction = (TargetLocation - CurrentLocation).GetSafeNormal();
+	Distance = FVector::Dist(CurrentLocation, TargetLocation);
 }
 
