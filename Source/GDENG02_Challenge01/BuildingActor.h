@@ -31,9 +31,10 @@ public:
 	void Load(int amount, ItemType type);
 
 	bool IsOutputFull();
+	bool HasOutput();
 	bool IsBuildingEmpty();
 	bool DoesContainItem(ItemType itemType);
-	
+	BuildingType GetBuildingType();
 
 private:
 	UPROPERTY(EditAnywhere)

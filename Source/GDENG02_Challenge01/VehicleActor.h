@@ -26,16 +26,25 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	void AddToQueue(int Request);
+	void AddToQueue(BuildingType ActualRequest);
+	void SetItemList(TArray<ItemType> list);
+	BuildingType GetTarget();
+	void SetTarget(BuildingType Location);
+	bool GetLoadRequest();
+	bool DoesHaveInQueue(BuildingType building);
+	bool DoesHaveItemInList(ItemType item);
+	bool IsItemListEmpty();
+	bool IsFullInCapacity();
+
+
 
 private:
-	void SetLoadRequest(bool value);
 	void ComputeTravel();
 	void Move(bool canMove, BuildingType Type);
-	void Unload(ItemType Item);
+	int Unload(ItemType Item);
 	void Load(ItemType Item, int AmountIn);
-	void UpdateQueue();
 	void DropItems();
+
 
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<BuildingType> Target;
@@ -105,6 +114,6 @@ private:
 	bool MoveRequest;
 
 	TArray<ItemType> ItemList;
-	TQueue<BuildingType> RequestQueue;
+	TArray<BuildingType> RequestQueue;
 	int ItemCount;
 };

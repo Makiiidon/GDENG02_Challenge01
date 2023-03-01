@@ -35,21 +35,19 @@ void AVehicleActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (Mesh != NULL) {
+		//UE_LOG(LogTemp, Warning, TEXT("Number of Items in Inventory is %d"), ItemList.Num());
+
 		if (!UnloadRequest) {
 			// Movement
 			if (MoveRequest) {
 				if (Target == None) {
 					if (!RequestQueue.IsEmpty()) { // Controls the Queue
-						Target = *RequestQueue.Peek();
-						RequestQueue.Pop();
+						Target = RequestQueue[0];
+						//UE_LOG(LogTemp, Warning, TEXT("%s has been added to the queue!"), *UEnum::GetValueAsString(RequestQueue[0]));
+						
+						RequestQueue.RemoveAt(0);
 						ComputeTravel();
 						Speed = Distance / TravelTime;
-						UE_LOG(LogTemp, Warning, TEXT("%s has been added to the queue!"), *UEnum::GetValueAsString(Target));
-
-					}
-					else {
-						UpdateQueue();
-						UE_LOG(LogTemp, Warning, TEXT("Updated the Queue"));
 
 					}
 				}
@@ -66,53 +64,45 @@ void AVehicleActor::Tick(float DeltaTime)
 
 				if (Distance < 200) { // For Reaching the target location
 					// Unload then go to next in Queue
-					// ====================================================================================================== Change into Depending on the Queue
 					if (Target == CoalMine) {
 						Target = None;
 						// Add To the Vehicle
-						CoalMineReference->Unload(MaxCapacity-1);
-						Load(Coal, MaxCapacity-1);
+						CoalMineReference->Unload(1);
+						Load(Coal, 1);
 					}
 					else if (Target == IronMine) {
 						Target = None;
-						IronMineReference->Unload(MaxCapacity-1);
-						Load(Iron, MaxCapacity-1);
+						IronMineReference->Unload(1);
+						Load(Iron, 1);
 					}
 					else if (Target == Lumberjack) {
 						Target = None;
-						LumberjackReference->Unload(MaxCapacity-1);
-						Load(Lumber, MaxCapacity-1);
+						LumberjackReference->Unload(1);
+						Load(Lumber, 1);
 					}
 					else if (Target == Furnace) {
 						Target = None;
-						if (FurnaceReference->IsOutputFull()) {
-
-							DropItems();
-							FurnaceReference->Unload(MaxCapacity - 1);
-							Load(Steel, MaxCapacity);
-						}else
-						// Remove From Vehicle and add to building
-						if (ItemList.Contains(Coal)) {
-							int ctr = 0;
-							for (int i = 0; i < ItemList.Num(); i++) {
-								if (ItemList[i] == Coal) {
-									Unload(Coal);
-									ctr++;
-								}
+						if (FurnaceReference->HasOutput()) {
+							if (!ItemList.Contains(Coal) && !ItemList.Contains(Iron)) {
+								DropItems();
 							}
-							FurnaceReference->Load(ctr, Coal);
+							if (FurnaceReference->IsOutputFull()) {
+								DropItems();
+
+							}
+							FurnaceReference->Unload(1);
+							Load(Steel, 1);
+							AddToQueue(Factory);
+
+						}else if (ItemList.Contains(Coal)) {// Remove From Vehicle and add to building
+							FurnaceReference->Load(Unload(Coal), Coal);
 
 						}
 						else if (ItemList.Contains(Iron)) {
-							int ctr = 0;
-							for (int i = 0; i < ItemList.Num(); i++) {
-								if (ItemList[i] == Iron) {
-									Unload(Iron);
-									ctr++;
-								}
-							}
-							FurnaceReference->Load(ctr, Iron);
+							FurnaceReference->Load(Unload(Iron), Iron);
+
 						}
+						
 
 
 					}
@@ -120,31 +110,21 @@ void AVehicleActor::Tick(float DeltaTime)
 						// Remove From Vehicle and add to building
 						Target = None;
 						if (ItemList.Contains(Lumber)) {
-							int ctr = 0;
-							for (int i = 0; i < ItemList.Num(); i++) {
-								if (ItemList[i] == Lumber) {
-									Unload(Lumber);
-									ctr++;
-								}
-							}
-							FactoryReference->Load(ctr, Lumber);
+							FactoryReference->Load(Unload(Lumber), Lumber);
 
 						}
-						else if (ItemList.Contains(Steel)) {
-							int ctr = 0;
-							for (int i = 0; i < ItemList.Num(); i++) {
-								if (ItemList[i] == Steel) {
-									Unload(Steel);
-									ctr++;
-								}
-							}
-							FactoryReference->Load(ctr, Steel);
+						else if (ItemList.Contains(Steel)) {					
+							FactoryReference->Load(Unload(Steel), Steel);
+
+						}
+						else {
+							DropItems();
 						}
 						
 					}
-					// ======================================================================================================
 
-					SetLoadRequest(true);
+
+					UnloadRequest = true;
 				}
 			}
 		}
@@ -177,93 +157,81 @@ void AVehicleActor::Move(bool canMove, BuildingType Type)
 	Target = Type;
 }
 
-void AVehicleActor::Unload(ItemType Item)
+int AVehicleActor::Unload(ItemType Item)
 {
 	if (ItemList.Contains(Item)) {
-		ItemList.Remove(Item);
+		return ItemList.Remove(Item);
 		ItemCount--;
+	}
+	else {
+		return 0;
 	}
 }
 
 void AVehicleActor::Load(ItemType Item, int AmountIn)
 {
 	if (AmountIn + ItemList.Num() <= MaxCapacity) {
-		ItemList.Add(Item);
-		ItemCount++;
-	}
-}
+		for (int i = 0; i < AmountIn; i ++) {
+			ItemList.Add(Item);
+			ItemCount++;
 
-void AVehicleActor::UpdateQueue()
-{
-	if ((FactoryReference->IsBuildingEmpty() && (ItemList.Contains(Lumber)) || 
-		(FactoryReference->IsBuildingEmpty() && ItemList.Contains(Steel)))) {
-		RequestQueue.Enqueue(Factory);
-		UE_LOG(LogTemp, Warning, TEXT("2Factory Has been Added to queue"));
-
+		}
 	}
-	else if ((FurnaceReference->IsOutputFull() && !FactoryReference->DoesContainItem(Steel)) || 
-		(ItemList.Contains(Coal) || ItemList.Contains(Iron))) {
-
-		RequestQueue.Enqueue(Furnace);
-		UE_LOG(LogTemp, Warning, TEXT("2Furnace Has been Added to queue"));
-	}
-	else if (LumberjackReference->IsOutputFull() && !FactoryReference->DoesContainItem(Lumber)) {
-		RequestQueue.Enqueue(Lumberjack);
-		UE_LOG(LogTemp, Warning, TEXT("2Lumber Has been Added to queue"));
-
-	}
-	else if (CoalMineReference->IsOutputFull() && !FurnaceReference->DoesContainItem(Coal)) {
-		RequestQueue.Enqueue(CoalMine);
-		UE_LOG(LogTemp, Warning, TEXT("2Coal Has been Added to queue"));
-	}
-	else if (IronMineReference->IsOutputFull() && !FurnaceReference->DoesContainItem(Iron)) {
-		RequestQueue.Enqueue(IronMine);
-		UE_LOG(LogTemp, Warning, TEXT("2Iron Has been Added to queue"));
-
-	}
-	ComputeTravel();
-	Speed = Distance / TravelTime;
 }
 
 void AVehicleActor::DropItems()
 {
 	ItemList.Empty();
-	ItemCount = 0;
 }
 
-void AVehicleActor::SetLoadRequest(bool value)
+
+bool AVehicleActor::GetLoadRequest()
 {
-	UnloadRequest = value;
+	return UnloadRequest;
 }
 
-void AVehicleActor::AddToQueue(int Request)
+bool AVehicleActor::DoesHaveInQueue(BuildingType building)
 {
-	BuildingType ActualRequest;
-	if (Request == 1) {
-		ActualRequest = CoalMine;
-	}
-	else if (Request == 2) {
-		ActualRequest = IronMine;
-	}
-	else if (Request == 3) {
-		ActualRequest = Lumberjack;
-	}
-	else if (Request == 4) {
-		ActualRequest = Furnace;
-	}
-	else if (Request == 5) {
-		ActualRequest = Factory;
-	}
-	else {
-		ActualRequest = None;
-	}
+	return RequestQueue.Contains(building);
+}
 
-	UE_LOG(LogTemp, Warning, TEXT("Added to queue"));
-	if (!RequestQueue.IsEmpty()) {
-		if (*RequestQueue.Peek() != ActualRequest) {
-			RequestQueue.Enqueue(ActualRequest);
-		}
-	}
+bool AVehicleActor::DoesHaveItemInList(ItemType item)
+{
+	return ItemList.Contains(item);
+}
+
+bool AVehicleActor::IsItemListEmpty()
+{
+	return ItemList.IsEmpty();
+}
+
+bool AVehicleActor::IsFullInCapacity()
+{
+	return MaxCapacity == ItemList.Num();
+}
+
+
+void AVehicleActor::AddToQueue(BuildingType ActualRequest)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Added to queue"));
+	RequestQueue.Push(ActualRequest);
+}
+
+
+void AVehicleActor::SetItemList(TArray<ItemType> list)
+{
+	ItemList = list;
+}
+
+BuildingType AVehicleActor::GetTarget()
+{
+	return Target;
+}
+
+
+void AVehicleActor::SetTarget(BuildingType Location)
+{
+	Target = Location;
 }
 
 void AVehicleActor::ComputeTravel()

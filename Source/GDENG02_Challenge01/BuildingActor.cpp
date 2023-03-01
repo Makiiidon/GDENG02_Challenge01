@@ -58,14 +58,11 @@ void ABuildingActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (Mesh != NULL) {
 		if (Input != 0) {
-			if (Type == Factory && Output != 0) {
-				
-				UE_LOG(LogTemp, Warning, TEXT("Output: %d "), Output);
-				
-			}
 			if (Output < OutputCapacity) {
 				if (Timer <= 0.0f) {
 					if (CanUseInventory) {
+						//UE_LOG(LogTemp, Warning, TEXT("FSADASDASD"));
+
 						if (Type == Furnace) {
 							int CoalFlag = -1;
 							int IronFlag = -1;
@@ -76,13 +73,15 @@ void ABuildingActor::Tick(float DeltaTime)
 								else if (Inventory[i] == Iron) {
 									IronFlag = i;
 								}
+								if (CoalFlag != -1 && IronFlag != -1) {
+									break;
+								}
 							}
 							if (CoalFlag != -1 && IronFlag != -1) {
-								Inventory.Remove(Coal);
-								Inventory.Remove(Iron);
-								Input -= 2;
+								Input -= Inventory.Remove(Iron) + Inventory.Remove(Coal) - 1;
 								Output++;
 							}
+							//UE_LOG(LogTemp, Warning, TEXT("Furnace Output: %d "), Output);
 
 						}
 						else if (Type == Factory) {
@@ -95,13 +94,16 @@ void ABuildingActor::Tick(float DeltaTime)
 								else if (Inventory[i] == Steel) {
 									SteelFlag = i;
 								}
+								if (LumberFlag != -1 && SteelFlag != -1) {
+									break;
+								}
 							}
 							if (LumberFlag != -1 && SteelFlag != -1) {
-								Inventory.Remove(Lumber);
-								Inventory.Remove(Steel);
-								Input -= 2;
+								Input -= Inventory.Remove(Lumber) + Inventory.Remove(Steel) - 1;
 								Output++;
 							}
+							//UE_LOG(LogTemp, Warning, TEXT("Output: %d "), Output);
+
 						}
 					}
 					else {
@@ -110,7 +112,10 @@ void ABuildingActor::Tick(float DeltaTime)
 					}
 
 					Timer = INTERVAL;
-					//UE_LOG(LogTemp, Warning, TEXT("Input: %d, Output: %d "), Input, Output);
+					if (Type == Factory) {
+						UE_LOG(LogTemp, Warning, TEXT("Input: %d, Output: %d "), Input, Output);
+
+					}
 				}
 				else {
 					Timer -= DeltaTime;
@@ -141,16 +146,20 @@ void ABuildingActor::Load(int amount, ItemType type)
 	if (CanUseInventory) {
 		if (Type == Furnace) {
 			if (type == Coal || type == Iron) {
-				for (int i = 0; i < amount; i++) {
-					Inventory.Add(type);
-				}
+				/*for (int i = 0; i < amount; i++) {
+					Inventory.Push(type);
+				}*/
+				Inventory.Add(type);
+
 			}
 		}
 		else if (Type == Factory) {
 			if (type == Lumber || type == Steel) {
-				for (int i = 0; i < amount; i++) {
-					Inventory.Add(type);
-				}
+				/*for (int i = 0; i < amount; i++) {
+					Inventory.Push(type);
+				}*/
+				Inventory.Add(type);
+
 			}
 		}
 		Input = amount;
@@ -160,6 +169,11 @@ void ABuildingActor::Load(int amount, ItemType type)
 bool ABuildingActor::IsOutputFull()
 {
 	return IsFull;
+}
+
+bool ABuildingActor::HasOutput()
+{
+	return Output != 0;
 }
 
 bool ABuildingActor::IsBuildingEmpty()
@@ -175,5 +189,10 @@ bool ABuildingActor::DoesContainItem(ItemType itemType)
 	else {
 		return false;
 	}
+}
+
+BuildingType ABuildingActor::GetBuildingType()
+{
+	return Type;
 }
 
