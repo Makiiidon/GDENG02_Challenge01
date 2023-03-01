@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Inventory_Widget.h"
 
 #include "GameManager.h"
 
@@ -15,13 +16,31 @@ AGameManager::AGameManager()
 void AGameManager::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (WidgetClass) {
+		Widget = Cast<UInventory_Widget>(CreateWidget(GetWorld(), WidgetClass));
+
+		if (Widget) {
+			Widget->AddToViewport();
+			UpdateTextValue();
+		}
+	}
+}
+
+void AGameManager::UpdateTextValue()
+{
+	Widget->SetCoalText(CoalReference->GetOutput());
+	Widget->SetIronText(IronReference->GetOutput());
+	Widget->SetLumberText(LumberjackReference->GetOutput());
+	Widget->SetSteelText(FurnaceReference->GetOutput());
+	Widget->SetSewingText(FactoryReference->GetOutput());
+
 }
 
 // Called every frame
 void AGameManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	UpdateTextValue();
 	if (CoalReference		!= nullptr &&
 		IronReference		!= nullptr &&
 		LumberjackReference != nullptr &&
@@ -32,7 +51,7 @@ void AGameManager::Tick(float DeltaTime)
 		
 
 		for (int i = 0; i < VehicleReferences.Num(); i++) {
-			if (VehicleReferences[i]->IsFullInCapacity()) {
+			if (!VehicleReferences[i]->IsItemListEmpty()) {
 			
 				RequestQueue.Empty();
 
@@ -112,7 +131,8 @@ void AGameManager::Tick(float DeltaTime)
 				if (!VehicleReferences[0]->DoesHaveInQueue(RequestQueue[0].type)) {
 					if (!VehicleReferences[1]->DoesHaveInQueue(VehicleReferences[0]->GetTarget())) {
 						UE_LOG(LogTemp, Warning, TEXT("RequestQueue[0] = %s"), *UEnum::GetValueAsString(RequestQueue[0].type));
-						VehicleReferences[0]->AddToQueue(RequestQueue[0].type);
+						//VehicleReferences[0]->AddToQueue(RequestQueue[0].type);
+						VehicleReferences[0]->SetTarget(RequestQueue[0].type);
 					}
 				}
 			}
@@ -120,7 +140,13 @@ void AGameManager::Tick(float DeltaTime)
 				if (!VehicleReferences[1]->DoesHaveInQueue(RequestQueue[0].type)) {
 					if (!VehicleReferences[0]->DoesHaveInQueue(VehicleReferences[1]->GetTarget())) {
 						UE_LOG(LogTemp, Warning, TEXT("RequestQueue[1] = %s"), *UEnum::GetValueAsString(RequestQueue[0].type));
-							VehicleReferences[1]->AddToQueue(RequestQueue[0].type);
+							//VehicleReferences[1]->AddToQueue(RequestQueue[0].type);
+						
+						if (VehicleReferences[0]->GetTarget() != RequestQueue[0].type) {
+							VehicleReferences[1]->SetTarget(RequestQueue[0].type);
+
+						}
+
 					}
 					
 					
@@ -132,5 +158,6 @@ void AGameManager::Tick(float DeltaTime)
 		//RequestQueue.Empty();
 		
 	}
+
 }
 

@@ -44,6 +44,8 @@ private:
 	int Unload(ItemType Item);
 	void Load(ItemType Item, int AmountIn);
 	void DropItems();
+	void UpdateQueue();
+
 
 
 	UPROPERTY(EditAnywhere)
@@ -115,5 +117,4 @@ private:
 
 	TArray<ItemType> ItemList;
 	TArray<BuildingType> RequestQueue;
-	int ItemCount;
 };

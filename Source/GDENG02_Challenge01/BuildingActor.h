@@ -8,6 +8,7 @@
 #include "BuildingActor.generated.h"
 
 
+class UInventory_Widget;
 
 UCLASS()
 class GDENG02_CHALLENGE01_API ABuildingActor : public AActor
@@ -22,6 +23,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -35,6 +38,7 @@ public:
 	bool IsBuildingEmpty();
 	bool DoesContainItem(ItemType itemType);
 	BuildingType GetBuildingType();
+	int GetOutput();
 
 private:
 	UPROPERTY(EditAnywhere)

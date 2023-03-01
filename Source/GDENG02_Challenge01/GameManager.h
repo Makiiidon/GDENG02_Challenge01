@@ -27,6 +27,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, Category = "Widgets")
+		TSubclassOf<class UUserWidget> WidgetClass;
+
+	UPROPERTY()
+		UInventory_Widget* Widget;
+
+	void UpdateTextValue();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

@@ -18,6 +18,9 @@ ABuildingActor::ABuildingActor()
 void ABuildingActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
+
 	Timer = INTERVAL;
 
 	if (Type == CoalMine) {
@@ -51,6 +54,8 @@ void ABuildingActor::BeginPlay()
 	IsFull = false;
 
 }
+
+
 
 // Called every frame
 void ABuildingActor::Tick(float DeltaTime)
@@ -112,10 +117,15 @@ void ABuildingActor::Tick(float DeltaTime)
 					}
 
 					Timer = INTERVAL;
-					if (Type == Factory) {
-						UE_LOG(LogTemp, Warning, TEXT("Input: %d, Output: %d "), Input, Output);
+					UpdateTextValue();
+					//if (Type == Factory) {
+					//	UE_LOG(LogTemp, Warning, TEXT("Factory Input: %d, Output: %d "), Input, Output);
 
-					}
+					//}
+					//if (Type == Furnace) {
+					//	UE_LOG(LogTemp, Warning, TEXT("Furnace Input: %d, Output: %d "), Input, Output);
+
+					//}
 				}
 				else {
 					Timer -= DeltaTime;
@@ -194,5 +204,10 @@ bool ABuildingActor::DoesContainItem(ItemType itemType)
 BuildingType ABuildingActor::GetBuildingType()
 {
 	return Type;
+}
+
+int ABuildingActor::GetOutput()
+{
+	return Output;
 }
 

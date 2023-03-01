@@ -50,6 +50,9 @@ void AVehicleActor::Tick(float DeltaTime)
 						Speed = Distance / TravelTime;
 
 					}
+					else {
+						UpdateQueue();
+					}
 				}
 				
 
@@ -83,16 +86,8 @@ void AVehicleActor::Tick(float DeltaTime)
 					else if (Target == Furnace) {
 						Target = None;
 						if (FurnaceReference->HasOutput()) {
-							if (!ItemList.Contains(Coal) && !ItemList.Contains(Iron)) {
-								DropItems();
-							}
-							if (FurnaceReference->IsOutputFull()) {
-								DropItems();
-
-							}
 							FurnaceReference->Unload(1);
 							Load(Steel, 1);
-							AddToQueue(Factory);
 
 						}else if (ItemList.Contains(Coal)) {// Remove From Vehicle and add to building
 							FurnaceReference->Load(Unload(Coal), Coal);
@@ -151,6 +146,38 @@ void AVehicleActor::Tick(float DeltaTime)
 	}
 }
 
+void AVehicleActor::UpdateQueue()
+{
+	if ((FactoryReference->IsBuildingEmpty() && (ItemList.Contains(Lumber)) ||
+		(FactoryReference->IsBuildingEmpty() && ItemList.Contains(Steel)))) {
+		RequestQueue.Add(Factory);
+		//UE_LOG(LogTemp, Warning, TEXT("2Factory Has been Added to queue"));
+
+	}
+	else if ((FurnaceReference->IsOutputFull() && !FactoryReference->DoesContainItem(Steel)) ||
+		(ItemList.Contains(Coal) || ItemList.Contains(Iron))) {
+
+		RequestQueue.Add(Furnace);
+		//UE_LOG(LogTemp, Warning, TEXT("2Furnace Has been Added to queue"));
+	}
+	else if (LumberjackReference->IsOutputFull() && !FactoryReference->DoesContainItem(Lumber)) {
+		RequestQueue.Add(Lumberjack);
+		//UE_LOG(LogTemp, Warning, TEXT("2Lumber Has been Added to queue"));
+
+	}
+	else if (CoalMineReference->IsOutputFull() && !FurnaceReference->DoesContainItem(Coal)) {
+		RequestQueue.Add(CoalMine);
+		//UE_LOG(LogTemp, Warning, TEXT("2Coal Has been Added to queue"));
+	}
+	else if (IronMineReference->IsOutputFull() && !FurnaceReference->DoesContainItem(Iron)) {
+		RequestQueue.Add(IronMine);
+		//UE_LOG(LogTemp, Warning, TEXT("2Iron Has been Added to queue"));
+
+	}
+	ComputeTravel();
+	Speed = Distance / TravelTime;
+}
+
 void AVehicleActor::Move(bool canMove, BuildingType Type)
 {
 	MoveRequest = canMove;
@@ -161,7 +188,6 @@ int AVehicleActor::Unload(ItemType Item)
 {
 	if (ItemList.Contains(Item)) {
 		return ItemList.Remove(Item);
-		ItemCount--;
 	}
 	else {
 		return 0;
@@ -171,11 +197,7 @@ int AVehicleActor::Unload(ItemType Item)
 void AVehicleActor::Load(ItemType Item, int AmountIn)
 {
 	if (AmountIn + ItemList.Num() <= MaxCapacity) {
-		for (int i = 0; i < AmountIn; i ++) {
 			ItemList.Add(Item);
-			ItemCount++;
-
-		}
 	}
 }
 
