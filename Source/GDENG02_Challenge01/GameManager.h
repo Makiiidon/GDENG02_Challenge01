@@ -45,5 +45,15 @@ private:
 	bool IsLumberFull = false;
 	bool IsSteelFull = false;
 
+	//int CoalScore = 0;
+	//int IronScore = 0;
+	//int LumberScore = 0;
+	//int SteelScore = 0;
+	//int FactoryScore = 0;
+
 	TArray<QUEUE> RequestQueue;
+
+	//int ComputeHeuristic(ABuildingActor*, AVehicleActor*);
+
+	//int GetHighest(TArray<int>);
 };

@@ -223,6 +223,11 @@ void AVehicleActor::SetItemList(TArray<ItemType> list)
 	ItemList = list;
 }
 
+TArray<ItemType> AVehicleActor::GetItemList()
+{
+	return ItemList;
+}
+
 BuildingType AVehicleActor::GetTarget()
 {
 	return Target;

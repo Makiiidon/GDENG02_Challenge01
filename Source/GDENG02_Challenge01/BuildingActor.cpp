@@ -102,7 +102,7 @@ void ABuildingActor::Tick(float DeltaTime)
 								Input -= Inventory.Remove(Lumber) + Inventory.Remove(Steel) - 1;
 								Output++;
 							}
-							//UE_LOG(LogTemp, Warning, TEXT("Output: %d "), Output);
+							UE_LOG(LogTemp, Warning, TEXT("Output: %d "), Output);
 
 						}
 					}
@@ -112,10 +112,10 @@ void ABuildingActor::Tick(float DeltaTime)
 					}
 
 					Timer = INTERVAL;
-					if (Type == Factory) {
+					/*if (Type == Factory) {
 						UE_LOG(LogTemp, Warning, TEXT("Input: %d, Output: %d "), Input, Output);
 
-					}
+					}*/
 				}
 				else {
 					Timer -= DeltaTime;
@@ -162,7 +162,7 @@ void ABuildingActor::Load(int amount, ItemType type)
 
 			}
 		}
-		Input = amount;
+		Input += amount;
 	}
 }
 
@@ -194,5 +194,10 @@ bool ABuildingActor::DoesContainItem(ItemType itemType)
 BuildingType ABuildingActor::GetBuildingType()
 {
 	return Type;
+}
+
+ItemType ABuildingActor::GetItem()
+{
+	return Item;
 }
 

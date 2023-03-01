@@ -36,6 +36,8 @@ public:
 	bool DoesContainItem(ItemType itemType);
 	BuildingType GetBuildingType();
 
+	ItemType GetItem();
+
 private:
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<BuildingType> Type;

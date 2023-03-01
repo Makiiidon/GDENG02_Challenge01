@@ -28,6 +28,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddToQueue(BuildingType ActualRequest);
 	void SetItemList(TArray<ItemType> list);
+	TArray<ItemType> GetItemList();
 	BuildingType GetTarget();
 	void SetTarget(BuildingType Location);
 	bool GetLoadRequest();

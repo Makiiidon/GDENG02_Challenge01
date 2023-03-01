@@ -29,6 +29,32 @@ void AGameManager::Tick(float DeltaTime)
 		FactoryReference	!= nullptr) {
 
 
+		/*for (int i = 0; i < VehicleReferences.Num(); i++) {
+			int CoalScore		= ComputeHeuristic(CoalReference,		VehicleReferences[i]);
+			int IronScore		= ComputeHeuristic(IronReference,		VehicleReferences[i]);
+			int LumberScore		= ComputeHeuristic(LumberjackReference, VehicleReferences[i]);
+			int FurnaceScore	= ComputeHeuristic(FurnaceReference,	VehicleReferences[i]);
+			int FactoryScore	= ComputeHeuristic(FactoryReference,	VehicleReferences[i]);
+
+			TArray<int> scores;
+			scores.Add(CoalScore);
+			scores.Add(IronScore);
+			scores.Add(LumberScore);
+			scores.Add(FurnaceScore);
+			scores.Add(FactoryScore);
+
+			QUEUE temp;
+
+			int highest = GetHighest(scores);
+			if (highest == 0) {
+				temp.type = CoalMine;
+				temp.vechicle = VehicleReferences[i];
+				RequestQueue.Push(temp);
+			}
+			else if () {
+
+			}
+		}*/
 		
 
 		for (int i = 0; i < VehicleReferences.Num(); i++) {
@@ -75,6 +101,13 @@ void AGameManager::Tick(float DeltaTime)
 					temp.vechicle = VehicleReferences[i];
 					RequestQueue.Push(temp); IsSteelFull = false;
 				}
+				else if (IsLumberFull) {
+					QUEUE temp;
+					temp.type = Lumberjack;
+					temp.vechicle = VehicleReferences[i];
+					RequestQueue.Push(temp); IsLumberFull = false;
+
+				}
 				else if (IsCoalFull) {
 					QUEUE temp;
 					temp.type = CoalMine;
@@ -89,13 +122,7 @@ void AGameManager::Tick(float DeltaTime)
 					RequestQueue.Push(temp); IsIronFull = false;
 
 				}
-				else if (IsLumberFull) {
-					QUEUE temp;
-					temp.type = Lumberjack;
-					temp.vechicle = VehicleReferences[i];
-					RequestQueue.Push(temp); IsLumberFull = false;
-
-				}
+				
 				
 			}
 
@@ -133,4 +160,78 @@ void AGameManager::Tick(float DeltaTime)
 		
 	}
 }
+//
+//int AGameManager::ComputeHeuristic(ABuildingActor* Building, AVehicleActor* Vehicle)
+//{
+//	int buildingTypeMultiplier = 1;
+//	int itemScore = 0;
+//	int fullness = 0;
+//	int inventoryScore = 0;
+//
+//	int vehicleItemScore = 0;
+//
+//	if (Building->GetBuildingType() == CoalMine || Building->GetBuildingType() == IronMine) {
+//		buildingTypeMultiplier = 1;
+//	}
+//	else if (Building->GetBuildingType() == Lumberjack) {
+//		buildingTypeMultiplier = 2;
+//	}
+//	else if (Building->GetBuildingType() == Furnace) {
+//		buildingTypeMultiplier = 3;
+//	}
+//	else if (Building->GetBuildingType() == Factory) {
+//		buildingTypeMultiplier = 4;
+//	}
+//
+//	// Item Priority
+//	if (Building->DoesContainItem(Steel)) {
+//		itemScore = 10;
+//	}
+//	else if (Building->DoesContainItem(Lumber)) {
+//		itemScore = 6;
+//	}
+//	else if (Building->DoesContainItem(Coal)) {
+//		itemScore = 4;
+//	}
+//	else if (Building->DoesContainItem(Iron)) {
+//		itemScore = 4;
+//	}
+//
+//	// If the building is full
+//	if (Building->IsOutputFull()) {
+//		fullness = 5;
+//	}
+//
+//	//
+//	if (Vehicle->GetItemList().Contains(Steel)) {
+//		inventoryScore = 8;
+//	}
+//	else if (Vehicle->GetItemList().Contains(Lumber)) {
+//		inventoryScore = 6;
+//	}
+//	else if (Vehicle->GetItemList().Contains(Coal)) {
+//		inventoryScore = 4;
+//	}
+//	else if (Vehicle->GetItemList().Contains(Iron)) {
+//		inventoryScore = 4;
+//	}
+//
+//
+//	return itemScore + fullness + inventoryScore;
+//}
+//
+//int AGameManager::GetHighest(TArray<int> scores)
+//{
+//	int highest = 0;
+//	int index = 0;
+//
+//	for (int i = 0; i < scores.Num(); i++) {
+//		if (highest < scores[i]) {
+//			highest = scores[i];
+//			index = i;
+//		}
+//	}
+//		
+//	return index;
+//}
 
