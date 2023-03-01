@@ -35,6 +35,7 @@ private:
 	void Unload(ItemType Item);
 	void Load(ItemType Item, int AmountIn);
 	void UpdateQueue();
+	void DropItems();
 
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<BuildingType> Target;

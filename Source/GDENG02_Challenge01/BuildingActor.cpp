@@ -58,10 +58,10 @@ void ABuildingActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (Mesh != NULL) {
 		if (Input != 0) {
-			if (Type == Furnace) {
-				for (int i = 0; i < Inventory.Num(); i++) {
-					UE_LOG(LogTemp, Warning, TEXT("For the Furnace... Input: %d, Output: %d "), Inventory[i], Output);
-				}
+			if (Type == Factory && Output != 0) {
+				
+				UE_LOG(LogTemp, Warning, TEXT("Output: %d "), Output);
+				
 			}
 			if (Output < OutputCapacity) {
 				if (Timer <= 0.0f) {

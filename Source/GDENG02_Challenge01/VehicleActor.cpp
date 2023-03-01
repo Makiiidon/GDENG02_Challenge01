@@ -85,6 +85,12 @@ void AVehicleActor::Tick(float DeltaTime)
 					}
 					else if (Target == Furnace) {
 						Target = None;
+						if (FurnaceReference->IsOutputFull()) {
+
+							DropItems();
+							FurnaceReference->Unload(MaxCapacity - 1);
+							Load(Steel, MaxCapacity);
+						}else
 						// Remove From Vehicle and add to building
 						if (ItemList.Contains(Coal)) {
 							int ctr = 0;
@@ -217,6 +223,12 @@ void AVehicleActor::UpdateQueue()
 	}
 	ComputeTravel();
 	Speed = Distance / TravelTime;
+}
+
+void AVehicleActor::DropItems()
+{
+	ItemList.Empty();
+	ItemCount = 0;
 }
 
 void AVehicleActor::SetLoadRequest(bool value)
